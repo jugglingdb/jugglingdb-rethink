@@ -19,13 +19,27 @@ To use it you need `jugglingdb@0.2.x`.
     }
     ```
 
-2. Use:
+2. Use (default options, you can omit them):
+
+    Important: database must exist.
 
     ```javascript
         var Schema = require('jugglingbd').Schema;
-        var schema = new Schema('rethink');
+        var schema = new Schema('rethink', {
+            host: "localhost",
+            port: 28015,
+            database: "test",
+            poolMin: 1,
+            poolMax: 10
+        });
         ...
     ```
+
+3. Connection pooling
+
+    RethinkDB adapter supports connection pooling via generic-pool module.
+    Pooling is enabled by default and can not be disabled for now.
+    You can change pooling options specifying parameters poolMin (default: 1) and poolMax (default: 10).
 
 ## MIT License
 
