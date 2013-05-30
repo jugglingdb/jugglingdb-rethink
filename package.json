@@ -9,7 +9,8 @@
   "dependencies": {
     "rethinkdb": ">= 1.5.0",
     "moment": "2.0.x",
-    "generic-pool": "2.0.x"
+    "generic-pool": "2.0.x",
+    "async": "~0.2.9"
   },
   "devDependencies": {
     "jugglingdb": "https://github.com/1602/jugglingdb/archive/master.tar.gz",
