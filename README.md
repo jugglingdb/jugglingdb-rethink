@@ -24,7 +24,7 @@ To use it you need `jugglingdb@0.2.x`.
     Important: database must exist.
 
     ```javascript
-        var Schema = require('jugglingbd').Schema;
+        var Schema = require('jugglingdb').Schema;
         var schema = new Schema('rethink', {
             host: "localhost",
             port: 28015,
