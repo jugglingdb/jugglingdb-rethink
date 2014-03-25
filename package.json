@@ -7,7 +7,7 @@
     "test": "make test-verbose"
   },
   "dependencies": {
-    "rethinkdb": "git+ssh://git@github.com:rethinkdb/rethinkdb.git",
+    "rethinkdb": "^1.11.0",
     "moment": "^2.0.0",
     "generic-pool": "^2.0.0",
     "underscore": "^1.5.2",
