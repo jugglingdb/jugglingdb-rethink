@@ -7,7 +7,7 @@
     "test": "make test-verbose"
   },
   "dependencies": {
-    "rethinkdb": "^1.12.0",
+    "rethinkdb": "^1.11.0",
     "moment": "^2.0.0",
     "generic-pool": "^2.0.0",
     "underscore": "^1.5.2",
