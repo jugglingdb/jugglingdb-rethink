@@ -1,6 +1,6 @@
 {
   "name": "jugglingdb-rethink",
-  "version": "1.1.11",
+  "version": "1.1.12",
   "description": "RethinkDB adapter for jugglingdb",
   "main": "index.js",
   "scripts": {
