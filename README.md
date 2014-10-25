@@ -2,6 +2,8 @@
 
 RethinkDB adapter for [jugglingdb](https://github.com/1602/jugglingdb).
 
+[![Build Status](https://travis-ci.org/fuwaneko/jugglingdb-rethink.svg)](https://travis-ci.org/fuwaneko/jugglingdb-rethink)
+
 ## Usage
 
 To use it you need `jugglingdb@0.2.x`.
@@ -62,4 +64,3 @@ To use it you need `jugglingdb@0.2.x`.
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
     THE SOFTWARE.
-

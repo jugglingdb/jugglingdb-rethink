@@ -7,14 +7,12 @@
     "test": "make test-verbose"
   },
   "dependencies": {
-    "rethinkdb": "^1.12.0",
-    "moment": "^2.5.1",
-    "generic-pool": "^2.0.4",
-    "lodash": "^2.4.1",
-    "async": "^0.2.10"
-  },
-  "peerDependencies": {
-    "jugglingdb": "^0.2.13"
+    "async": "^0.9.0",
+    "generic-pool": "^2.1.1",
+    "jugglingdb": "^0.3.0",
+    "lodash-node": "^2.4.1",
+    "moment": "^2.8.3",
+    "rethinkdb": "^1.15.0-0"
   },
   "devDependencies": {
     "jugglingdb": "https://github.com/1602/jugglingdb/archive/master.tar.gz",

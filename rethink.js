@@ -1,9 +1,9 @@
 /* jshint sub: true */
-var r = require('rethinkdb');
-var moment = require('moment');
-var gpool = require('generic-pool');
-var async = require('async');
-var _ = require("lodash");
+var r = require("rethinkdb");
+var moment = require("moment");
+var gpool = require("generic-pool");
+var async = require("async");
+var _ = require("lodash-node");
 
 exports.initialize = function initializeSchema(schema, callback) {
     if (!r) return;
@@ -186,7 +186,7 @@ RethinkDB.prototype.isActual = function(cb) {
 
         r.db(_this.database).tableList().run(client, function(error, cursor) {
             if (!error) {
-                if (cursor.hasNext()) {
+                if (cursor.next()) {
                     cursor.toArray(function(error, list) {
                         if (error) {
                             _this.pool.release(client);
@@ -679,4 +679,3 @@ function _processWhere(_this, model, where, promise) {
 
     return promise;
 }
-
