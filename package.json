@@ -11,8 +11,8 @@
     "generic-pool": "^2.1.1",
     "jugglingdb": "^0.3.0",
     "lodash-node": "^2.4.1",
-    "moment": "^2.8.3",
-    "rethinkdb": "^1.15.0-0"
+    "moment": "^2.9.0",
+    "rethinkdb": "^1.15.0"
   },
   "devDependencies": {
     "jugglingdb": "https://github.com/1602/jugglingdb/archive/master.tar.gz",

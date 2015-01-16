@@ -275,7 +275,7 @@ RethinkDB.prototype.save = function (model, data, callback) {
             if (data[key] === undefined)
                 data[key] = null;
         });
-        r.db(_this.database).table(model).insert(data, { upsert: true }).run(client, function (err, notice) {
+        r.db(_this.database).table(model).insert(data, { conflict: "update" }).run(client, function (err, notice) {
             _this.pool.release(client);
             err = err || notice.first_error && new Error(notice.first_error);
             callback(err, notice);
@@ -344,10 +344,10 @@ RethinkDB.prototype.updateOrCreate = function updateOrCreate(model, data, callba
             if (data[key] === undefined)
                 data[key] = null;
         });
-        r.db(_this.database).table(model).insert(data, {upsert: true, returnVals: true}).run(client, function (err, m) {
+        r.db(_this.database).table(model).insert(data, { conflict: "update", returnChanges: true }).run(client, function (err, m) {
             _this.pool.release(client);
             err = err || m.first_error && new Error(m.first_error);
-            callback(err, err ? null : m['new_val']);
+            callback(err, err ? null : m['changes']['new_val']);
         });
     });
 };
