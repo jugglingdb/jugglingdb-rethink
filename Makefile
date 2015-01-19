@@ -7,7 +7,7 @@ TESTS = test/imported.test.js
 test:
 	$(TESTER) $(OPTS) $(TESTS)
 test-verbose:
-	$(TESTER) $(OPTS) --reporter spec $(TESTS)
+	$(TESTER) $(OPTS) --reporter list $(TESTS)
 testing:
 	$(TESTER) $(OPTS) --watch $(TESTS)
 
