@@ -1,8 +1,8 @@
 language: node_js
 before_script:
   - sudo add-apt-repository ppa:rethinkdb/ppa -y
-  - sudo apt-get update -q
-  - sudo apt-get install rethinkdb
+  - sudo apt-get update -qq
+  - sudo apt-get install -y rethinkdb
 node_js:
   - 0.10
   - 0.11
