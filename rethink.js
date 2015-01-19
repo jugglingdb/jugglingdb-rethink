@@ -91,85 +91,102 @@ RethinkDB.prototype.connect = function(cb) {
 
 RethinkDB.prototype.define = function (descr) {
     if (!descr.settings) descr.settings = {};
+    descr.properties.id = descr.properties.id || { type: String, index: true };
     this._models[descr.model.modelName] = descr;
     this._foreignKeys[descr.model.modelName] = [];
 };
 
+RethinkDB.prototype.defineProperty = function (model, prop, params) {
+    this._models[model].properties[prop] = params;
+};
+
+RethinkDB.prototype.defineForeignKey = function(name, key, anotherName, cb) {
+    this._foreignKeys[name].push(key);
+    cb(null, String);
+};
+
+RethinkDB.prototype.table = function(model) {
+    return this._models[model].model.tableName;
+};
+
 // creates tables if not exists
-RethinkDB.prototype.autoupdate = function(cb) {
+RethinkDB.prototype.autoupdate = function(done) {
     var _this = this;
 
     _this.pool.acquire(function(error, client) {
-        if (error) throw error;
+        if (error) {
+            return done(error);
+        }
 
         r.db(_this.database).tableList().run(client, function(error, cursor) {
-            if (!error) {
+            if (error) {
+                _this.pool.release(client);
+                return done(error);
+            }
+
+            cursor.toArray(function(error, list) {
+                async.each(Object.keys(_this._models), function(model, cb) {
+                    if (list.length === 0 || list.indexOf(model) < 0) {
+                        r.db(_this.database).tableCreate(model).run(client, function(error) {
+                            if (error) return cb(error);
+
+                            createIndices(cb, model, client);
+                        });
+                    }
+                    else {
+                        createIndices(cb, model, client);
+                    }
+                }, function(err) {
+                    _this.pool.release(client);
+                    done(err);
+                });
+            });
+            
+        });
+    });
+
+    function createIndices(cb, model, client) {
+        var properties = _this._models[model].properties;
+        var settings = _this._models[model].settings;
+        var indexCollection = _.extend({}, properties, settings);
+
+        function checkAndCreate(list, indexName, indexOption, indexFunction, cb3) {
+
+            // Don't attempt to create an index on primary key 'id'
+            if (indexName !== 'id' && _hasIndex(_this, model, indexName) && list.indexOf(indexName) < 0) {
+                var query = r.db(_this.database).table(model);
+                if (indexFunction) {
+                    query = query.indexCreate(indexName, indexFunction, indexOption);
+                }
+                else {
+                    query = query.indexCreate(indexName, indexOption);
+                }
+                query.run(client, cb3);
+            }
+            else {
+                cb3();
+            }
+        }
+
+        if (!_.isEmpty(indexCollection)) {
+            r.db(_this.database).table(model).indexList().run(client, function(error, cursor) {
+                if (error) return cb(error);
+
                 cursor.toArray(function(error, list) {
-                    async.each(Object.keys(_this._models), function(model, cb2) {
-                        if (list.length === 0 || list.indexOf(model) < 0) {
-                            r.db(_this.database).tableCreate(model).run(client, function(error) {
-                                if (error) return cb2(error);
+                    if (error) return cb(error);
 
-                                createIndices();
-                            });
-                        }
-                        else {
-                            createIndices();
-                        }
-
-                        function createIndices() {
-                            var properties = _this._models[model].properties;
-                            var settings = _this._models[model].settings;
-                            var indexCollection = _.extend({}, properties, settings);
-
-                            function checkAndCreate(list, indexName, indexOption, indexFunction, cb) {
-
-                                // Don't attempt to create an index on primary key 'id'
-                                if (indexName !== 'id' && _hasIndex(_this, model, indexName) && list.indexOf(indexName) < 0) {
-                                    var query = r.db(_this.database).table(model);
-                                    if (indexFunction) {
-                                        query = query.indexCreate(indexName, indexFunction, indexOption);
-                                    }
-                                    else {
-                                        query = query.indexCreate(indexName, indexOption);
-                                    }
-                                    query.run(client, cb);
-                                }
-                                else {
-                                    cb();
-                                }
-                            }
-
-                            if (!_.isEmpty(indexCollection)) {
-                                r.db(_this.database).table(model).indexList().run(client, function(error, cursor) {
-                                    if (error) return cb2(error);
-
-                                    cursor.toArray(function(error, list) {
-                                        if (error) return cb2(error);
-
-                                        async.each(Object.keys(indexCollection), function (indexName, cb3) {
-                                            var indexConf = indexCollection[indexName];
-                                            checkAndCreate(list, indexName, indexConf.indexOption || {}, indexConf.indexFunction, cb3);
-                                        }, function(err) {
-                                            cb2(err);
-                                        });
-                                    });
-                                });
-                            } else {
-                                cb2();
-                            }
-                        }
+                    async.each(Object.keys(indexCollection), function (indexName, cb4) {
+                        var indexConf = indexCollection[indexName];
+                        checkAndCreate(list, indexName, indexConf.indexOption || {}, indexConf.indexFunction, cb4);
                     }, function(err) {
-                        _this.pool.release(client);
                         cb(err);
                     });
                 });
-            } else {
-                _this.pool.release(client);
-                cb(error);
-            }
-        });
-    });
+            });
+        } else {
+            cb();
+        }
+    }
 };
 
 // drops tables and re-creates them
@@ -236,33 +253,12 @@ RethinkDB.prototype.isActual = function(cb) {
     });
 };
 
-RethinkDB.prototype.defineForeignKey = function(name, key, anotherName, cb) {
-    this._foreignKeys[name].push(key);
-    cb(null, String);
-};
-
 RethinkDB.prototype.create = function (model, data, callback) {
-    var _this = this;
+    if (data.id === null || data.id === undefined) {
+        delete data.id;
+    }
 
-    _this.pool.acquire(function(error, client) {
-        if (error) throw error;
-
-        if (data.id === null || data.id === undefined) {
-            delete data.id;
-        }
-        Object.keys(data).forEach(function (key) {
-            if (data[key] === undefined)
-                data[key] = null;
-        });
-        r.db(_this.database).table(model).insert(data).run(client, function (err, m) {
-            _this.pool.release(client);
-            err = err || m.first_error && new Error(m.first_error);
-            if (m.generated_keys) {
-                data.id = m.generated_keys[0];
-            }
-            callback(err, err ? null : data.id);
-        });
-    });
+    this.save(model, data, callback);
 };
 
 RethinkDB.prototype.save = function (model, data, callback) {
@@ -275,10 +271,14 @@ RethinkDB.prototype.save = function (model, data, callback) {
             if (data[key] === undefined)
                 data[key] = null;
         });
-        r.db(_this.database).table(model).insert(data, { conflict: "update" }).run(client, function (err, notice) {
+
+        r.db(_this.database).table(model).insert(data, { conflict: "update" }).run(client, function (err, m) {
             _this.pool.release(client);
-            err = err || notice.first_error && new Error(notice.first_error);
-            callback(err, notice);
+            err = err || m.first_error && new Error(m.first_error);
+            if (m.generated_keys) {
+                data.id = m.generated_keys[0];
+            }
+            callback(err, m.id);
         });
     });
 };

@@ -2,6 +2,8 @@
 
 RethinkDB adapter for [jugglingdb](https://github.com/1602/jugglingdb).
 
+**Attention! JugglingDB is awfully maintained. I fix bugs and update this adapter for newer RethinkDB versions if requested, but I suggest you to use other ORM for Node. If you know good one which does not have RethinkDB support yet -- let me know.**
+
 [![Build Status](https://travis-ci.org/fuwaneko/jugglingdb-rethink.svg)](https://travis-ci.org/fuwaneko/jugglingdb-rethink)
 
 ## Usage
