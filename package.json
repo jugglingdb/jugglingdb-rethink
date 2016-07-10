@@ -12,14 +12,14 @@
     "jugglingdb": "^0.3.0",
     "lodash-node": "^2.4.1",
     "moment": "^2.9.0",
-    "rethinkdb": "^1.15.0"    
+    "rethinkdb": "^1.15.0"
   },
   "devDependencies": {
     "grunt": "^0.4.5",
     "grunt-release": "^0.10.0",
-    "mocha": "^2.1.0",
-    "should": "^4.6.1",
-    "semicov": "^0.1.1-2"
+    "mocha": "^2.5.3",
+    "semicov": "^0.1.1-2",
+    "should": "^9.0.2"
   },
   "repository": "http://github.com/fuwaneko/jugglingdb-rethink",
   "author": "Dmitry Gorbunov <atskiisotona@gmail.com>",
